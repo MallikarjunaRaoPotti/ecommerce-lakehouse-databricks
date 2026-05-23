@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Commerce Sales Dashboard — Mallikarjunarao</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --green: #10b981;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --card-glow: 0 0 30px rgba(0,212,255,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 32px 40px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(180deg, #0d1628 0%, transparent 100%);
+  }
+  .header-left h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .header-left p {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-top: 4px;
+  }
+  .badge {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 16px 40px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    color: var(--muted);
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    border-bottom: none;
+    letter-spacing: 0.3px;
+  }
+  .tab.active {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+    margin-bottom: -1px;
+  }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* PAGES */
+  .page { display: none; padding: 28px 40px 40px; }
+  .page.active { display: block; }
+
+  /* KPI ROW */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--card-glow);
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--green);
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* GRID */
+  .chart-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .row-2 { grid-template-columns: 1fr 1fr; }
+  .row-1 { grid-template-columns: 1fr; margin-top: 16px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--card-glow);
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* BAR CHART */
+  .bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 140px; }
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: opacity 0.2s;
+    position: relative;
+    min-height: 4px;
+  }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; text-align: center; }
+  .bar-val { font-size: 10px; color: var(--text); font-family: 'DM Mono', monospace; }
+
+  /* LINE CHART */
+  .line-chart-wrap { position: relative; height: 140px; }
+  svg.line-svg { width: 100%; height: 100%; overflow: visible; }
+
+  /* HEATMAP */
+  .heatmap { display: flex; flex-direction: column; gap: 3px; }
+  .heatmap-row { display: flex; gap: 3px; align-items: center; }
+  .heatmap-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; width: 30px; flex-shrink: 0; }
+  .heatmap-cell { flex: 1; height: 22px; border-radius: 3px; }
+  .heatmap-x { display: flex; gap: 3px; padding-left: 33px; margin-top: 4px; }
+  .heatmap-x span { flex: 1; font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; text-align: center; }
+
+  /* DONUT */
+  .donut-wrap { display: flex; align-items: center; gap: 24px; }
+  .donut-legend { flex: 1; }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-text { font-size: 12px; color: var(--text); flex: 1; }
+  .legend-pct { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--muted); }
+
+  /* FORECAST */
+  .forecast-note {
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #a78bfa;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 16px;
+  }
+
+  /* FILTER TAG */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .filter-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+  }
+  .filter-tag.selected {
+    background: rgba(0,212,255,0.1);
+    border-color: rgba(0,212,255,0.3);
+    color: var(--accent);
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  .note-banner {
+    background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(124,58,237,0.08));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .note-banner strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>E-Commerce Transaction Intelligence Dashboard</h1>
+    <p>ecommerce.gold · Databricks Lakehouse · Built by Mallikarjunarao</p>
+  </div>
+  <span class="badge">DATABRICKS · DELTA LAKE · PYSPARK</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPage('sales')">📊 Sales</div>
+  <div class="tab" onclick="showPage('forecast')">📈 Forecasting</div>
+</div>
+
+<!-- SALES PAGE -->
+<div class="page active" id="page-sales">
+
+  <div class="note-banner">
+    ⚡ <strong>Static Preview</strong> — This is a GitHub showcase of the live Databricks dashboard. Charts reflect actual data structure and query logic from <strong>ecommerce.gold</strong> layer. Real dashboard connected to live Delta Lake tables.
+  </div>
+
+  <div class="filter-row">
+    <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;align-self:center;">FILTERS:</span>
+    <span class="filter-tag selected">All Categories</span>
+    <span class="filter-tag">Electronics</span>
+    <span class="filter-tag">Clothing</span>
+    <span class="filter-tag">Grocery</span>
+    <span class="filter-tag">Books</span>
+    <span class="filter-tag">Toys</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Total Transactions</div>
+      <div class="kpi-value">48,290</div>
+      <div class="kpi-sub">↑ 12.4% vs prev period</div>
+    </div>
+    <div class="kpi" style="--accent: #7c3aed;">
+      <div class="kpi-label">Net Revenue (INR)</div>
+      <div class="kpi-value">₹2.4Cr</div>
+      <div class="kpi-sub" style="color:#a78bfa;">↑ 8.1% growth</div>
+    </div>
+    <div class="kpi" style="--accent: #f59e0b;">
+      <div class="kpi-label">Avg Order Value</div>
+      <div class="kpi-value">₹4,970</div>
+      <div class="kpi-sub" style="color:#fbbf24;">Across all channels</div>
+    </div>
+    <div class="kpi" style="--accent: #10b981;">
+      <div class="kpi-label">Active Customers</div>
+      <div class="kpi-value">12,840</div>
+      <div class="kpi-sub">Multi-country</div>
+    </div>
+  </div>
+
+  <div class="chart-grid row-2">
+    <!-- Transactions by Currency -->
+    <div class="card">
+      <div class="card-title">Transactions in Each Currency</div>
+      <div class="bar-chart">
+        <div class="bar-wrap">
+          <div class="bar-val">18.2K</div>
+          <div class="bar" style="height:100%;background:linear-gradient(180deg,#00d4ff,#0088aa);"></div>
+          <div class="bar-label">INR</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-val">14.1K</div>
+          <div class="bar" style="height:77%;background:linear-gradient(180deg,#7c3aed,#4c1d95);"></div>
+          <div class="bar-label">USD</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-val">9.8K</div>
+          <div class="bar" style="height:54%;background:linear-gradient(180deg,#f59e0b,#b45309);"></div>
+          <div class="bar-label">EUR</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-val">4.2K</div>
+          <div class="bar" style="height:23%;background:linear-gradient(180deg,#10b981,#065f46);"></div>
+          <div class="bar-label">GBP</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-val">2.0K</div>
+          <div class="bar" style="height:11%;background:linear-gradient(180deg,#ec4899,#9d174d);"></div>
+          <div class="bar-label">AED</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Revenue Line -->
+    <div class="card">
+      <div class="card-title">Monthly Revenue & Order Lines (2025)</div>
+      <div class="line-chart-wrap">
+        <svg class="line-svg" viewBox="0 0 400 130" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Area fill -->
+          <path d="M0,110 L33,95 L66,80 L100,70 L133,60 L166,45 L200,50 L233,35 L266,40 L300,25 L333,30 L366,20 L400,110 Z" fill="url(#lineGrad)"/>
+          <!-- Line -->
+          <polyline points="0,110 33,95 66,80 100,70 133,60 166,45 200,50 233,35 266,40 300,25 333,30 366,20" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Order count line -->
+          <polyline points="0,100 33,90 66,85 100,80 133,75 166,70 200,72 233,65 266,68 300,60 333,62 366,55" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>
+          <!-- Dots -->
+          <circle cx="366" cy="20" r="4" fill="#00d4ff"/>
+          <circle cx="300" cy="25" r="3" fill="#00d4ff" opacity="0.6"/>
+        </svg>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);">
+          <div style="width:16px;height:2px;background:#00d4ff;border-radius:2px;"></div> Net Revenue (INR)
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);">
+          <div style="width:16px;height:2px;background:#7c3aed;border-radius:2px;border-top:2px dashed #7c3aed;"></div> Order Count
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid row-2" style="margin-top:16px;">
+    <!-- Net Amount by Channel -->
+    <div class="card">
+      <div class="card-title">Net Amount by Channel (Monthly)</div>
+      <div class="bar-chart" style="height:120px;">
+        <div class="bar-wrap">
+          <div class="bar" style="height:90%;background:linear-gradient(180deg,#00d4ff,#0088aa);"></div>
+          <div class="bar-label">Jan</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar" style="height:75%;background:linear-gradient(180deg,#7c3aed,#4c1d95);"></div>
+          <div class="bar-label">Feb</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar" style="height:85%;background:linear-gradient(180deg,#f59e0b,#b45309);"></div>
+          <div class="bar-label">Mar</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar" style="height:60%;background:linear-gradient(180deg,#10b981,#065f46);"></div>
+          <div class="bar-label">Apr</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar" style="height:95%;background:linear-gradient(180deg,#ec4899,#9d174d);"></div>
+          <div class="bar-label">May</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar" style="height:70%;background:linear-gradient(180deg,#00d4ff,#0088aa);"></div>
+          <div class="bar-label">Jun</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);">🔵 Online &nbsp; 🟣 In-Store &nbsp; 🟡 Mobile &nbsp; 🟢 Partner</span>
+      </div>
+    </div>
+
+    <!-- Customer Count by Country (Donut) -->
+    <div class="card">
+      <div class="card-title">Customer Count by Country</div>
+      <div class="donut-wrap">
+        <svg width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#1a2235" stroke-width="20"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#00d4ff" stroke-width="20" stroke-dasharray="100 151" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#7c3aed" stroke-width="20" stroke-dasharray="55 196" stroke-dashoffset="-100" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#f59e0b" stroke-width="20" stroke-dasharray="35 216" stroke-dashoffset="-155" transform="rotate(-90 55 55)"/>
+          <circle cx="55" cy="55" r="40" fill="none" stroke="#10b981" stroke-width="20" stroke-dasharray="11 240" stroke-dashoffset="-190" transform="rotate(-90 55 55)"/>
+          <text x="55" y="51" text-anchor="middle" fill="#fff" font-size="11" font-family="Syne" font-weight="700">12.8K</text>
+          <text x="55" y="63" text-anchor="middle" fill="#64748b" font-size="8" font-family="DM Mono">customers</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#00d4ff;"></div><span class="legend-text">India</span><span class="legend-pct">40%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;"></div><span class="legend-text">USA</span><span class="legend-pct">22%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div><span class="legend-text">Europe</span><span class="legend-pct">14%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div><span class="legend-text">Others</span><span class="legend-pct">24%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEATMAP -->
+  <div class="card row-1" style="margin-top:16px;">
+    <div class="card-title">Daily Hour-Wise Sales Heatmap (Revenue by Day × Hour)</div>
+    <div class="heatmap">
+      <div class="heatmap-row">
+        <div class="heatmap-label">Mon</div>
+        <div class="heatmap-cell" style="background:rgba(0,212,255,0.1);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.08);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.05);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.05);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.08);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.2);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.45);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.7);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.9);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.85);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.6);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.4);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.75);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.5);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.4);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.6);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.8);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.95);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.7);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.5);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.3);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.2);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.15);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.1);"></div>
+      </div>
+      <div class="heatmap-row">
+        <div class="heatmap-label">Tue</div>
+        <div class="heatmap-cell" style="background:rgba(0,212,255,0.08);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.06);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.04);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.04);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.1);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.3);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.5);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.65);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.8);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.75);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.55);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.35);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.7);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.55);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.45);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.65);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.85);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,1);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.75);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.45);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.25);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.18);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.12);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.08);"></div>
+      </div>
+      <div class="heatmap-row">
+        <div class="heatmap-label">Wed</div>
+        <div class="heatmap-cell" style="background:rgba(124,58,237,0.1);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.07);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.05);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.05);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.12);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.3);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.5);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.7);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.85);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.8);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.6);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.4);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.75);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.6);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.5);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.7);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.9);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.95);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.7);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.4);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.2);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.15);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.1);"></div><div class="heatmap-cell" style="background:rgba(124,58,237,0.08);"></div>
+      </div>
+      <div class="heatmap-row">
+        <div class="heatmap-label">Thu</div>
+        <div class="heatmap-cell" style="background:rgba(0,212,255,0.09);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.06);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.04);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.04);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.09);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.25);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.4);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.6);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.8);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.9);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.65);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.45);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.6);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.5);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.55);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.7);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.85);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.9);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.65);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.4);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.22);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.14);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.1);"></div><div class="heatmap-cell" style="background:rgba(0,212,255,0.07);"></div>
+      </div>
+      <div class="heatmap-row">
+        <div class="heatmap-label">Fri</div>
+        <div class="heatmap-cell" style="background:rgba(245,158,11,0.1);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.07);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.05);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.05);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.12);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.28);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.45);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.65);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.85);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.9);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.7);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.5);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.8);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.65);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.6);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.75);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.95);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,1);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.8);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.55);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.3);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.2);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.14);"></div><div class="heatmap-cell" style="background:rgba(245,158,11,0.1);"></div>
+      </div>
+      <div class="heatmap-row">
+        <div class="heatmap-label">Sat</div>
+        <div class="heatmap-cell" style="background:rgba(16,185,129,0.12);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.08);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.06);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.06);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.15);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.35);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.55);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.75);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.9);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.95);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.8);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.65);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.85);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.75);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.7);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.85);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.95);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,1);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.85);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.65);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.4);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.25);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.18);"></div><div class="heatmap-cell" style="background:rgba(16,185,129,0.12);"></div>
+      </div>
+      <div class="heatmap-row">
+        <div class="heatmap-label">Sun</div>
+        <div class="heatmap-cell" style="background:rgba(236,72,153,0.15);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.1);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.07);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.07);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.18);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.4);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.6);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.8);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.95);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,1);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.85);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.7);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.9);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.8);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.75);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.85);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.9);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.95);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.8);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.55);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.35);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.22);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.15);"></div><div class="heatmap-cell" style="background:rgba(236,72,153,0.1);"></div>
+      </div>
+    </div>
+    <div class="heatmap-x">
+      <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);">
+      Low <div style="width:80px;height:8px;border-radius:4px;background:linear-gradient(90deg,rgba(0,212,255,0.05),rgba(0,212,255,1));margin:0 4px;"></div> High Revenue
+    </div>
+  </div>
+</div>
+
+<!-- FORECAST PAGE -->
+<div class="page" id="page-forecast">
+  <div class="forecast-note">
+    🤖 Prophet model trained on <strong>ecommerce.gold.fact_transactions_denorm</strong> · Forecast written back to <strong>ecommerce.gold.revenue_forecast</strong> Delta table · 6-month forward prediction
+  </div>
+
+  <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);">
+    <div class="kpi" style="--accent:#7c3aed;">
+      <div class="kpi-label">Model</div>
+      <div class="kpi-value" style="font-size:18px;">Prophet</div>
+      <div class="kpi-sub" style="color:#a78bfa;">Facebook Time-Series</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Forecast Horizon</div>
+      <div class="kpi-value">6 Mo</div>
+      <div class="kpi-sub">Monthly frequency</div>
+    </div>
+    <div class="kpi" style="--accent:#10b981;">
+      <div class="kpi-label">Predicted Growth</div>
+      <div class="kpi-value">+18%</div>
+      <div class="kpi-sub" style="color:#10b981;">vs last 6 months</div>
+    </div>
+  </div>
+
+  <div class="chart-grid row-1">
+    <div class="card">
+      <div class="card-title">Real Sales — Monthly (ecommerce.gold)</div>
+      <div class="bar-chart" style="height:130px;">
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">3.2L</div><div class="bar" style="height:60%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">Jan</div></div>
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">3.8L</div><div class="bar" style="height:70%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">Feb</div></div>
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">4.1L</div><div class="bar" style="height:76%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">Mar</div></div>
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">3.6L</div><div class="bar" style="height:67%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">Apr</div></div>
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">4.5L</div><div class="bar" style="height:84%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">May</div></div>
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">4.2L</div><div class="bar" style="height:78%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">Jun</div></div>
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">5.1L</div><div class="bar" style="height:95%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">Jul</div></div>
+        <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">4.8L</div><div class="bar" style="height:89%;background:linear-gradient(180deg,#00d4ff,#0066aa);"></div><div class="bar-label">Aug</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">Predicted Sales — Next 6 Months (yhat from Prophet)</div>
+    <div class="bar-chart" style="height:130px;">
+      <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">5.2L</div><div class="bar" style="height:75%;background:linear-gradient(180deg,#7c3aed,#4c1d95);opacity:0.8;"></div><div class="bar-label">Sep</div></div>
+      <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">5.6L</div><div class="bar" style="height:81%;background:linear-gradient(180deg,#7c3aed,#4c1d95);opacity:0.8;"></div><div class="bar-label">Oct</div></div>
+      <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">6.1L</div><div class="bar" style="height:88%;background:linear-gradient(180deg,#7c3aed,#4c1d95);opacity:0.8;"></div><div class="bar-label">Nov</div></div>
+      <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">6.9L</div><div class="bar" style="height:100%;background:linear-gradient(180deg,#a78bfa,#6d28d9);"></div><div class="bar-label">Dec</div></div>
+      <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">5.8L</div><div class="bar" style="height:84%;background:linear-gradient(180deg,#7c3aed,#4c1d95);opacity:0.8;"></div><div class="bar-label">Jan</div></div>
+      <div class="bar-wrap"><div class="bar-val" style="font-size:9px;">6.3L</div><div class="bar" style="height:91%;background:linear-gradient(180deg,#7c3aed,#4c1d95);opacity:0.8;"></div><div class="bar-label">Feb</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:10px;">
+      ⚡ Peak in Dec driven by seasonal trend · Written to ecommerce.gold.revenue_forecast Delta table
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Built by <strong style="color:var(--text);">Mallikarjunarao</strong> &nbsp;·&nbsp;
+  Stack: PySpark · Databricks · Delta Lake · Prophet · Unity Catalog &nbsp;·&nbsp;
+  <a href="#">GitHub Repo</a>
+</div>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+
+CREATE SCHEMA IF NOT EXISTS ecommerce.bronze;
+CREATE SCHEMA IF NOT EXISTS ecommerce.silver;
+CREATE SCHEMA IF NOT EXISTS ecommerce.gold;
