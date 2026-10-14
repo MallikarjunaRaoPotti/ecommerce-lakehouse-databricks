@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">E-commerce lakehouse on Databricks</title>
+  <desc id="desc">Raw CSV files in Unity Catalog Volumes are loaded into six bronze Delta tables, cleaned into six silver tables, and modelled into a gold star schema with customer, product and date dimensions and an order-items fact table. A Databricks SQL dashboard and a Prophet six-month revenue forecast are built on the gold layer.</desc>
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#E6EDF3" stroke-opacity="0.03"/>
+    </pattern>
+    <clipPath id="frame"><rect width="1200" height="360" rx="20"/></clipPath>
+  </defs>
+  <style>
+    .sans { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    .mono { font-family: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, 'Liberation Mono', Menlo, monospace; }
+    .flow { stroke-dasharray: 3 9; animation: flow 1.1s linear infinite; }
+    @keyframes flow { to { stroke-dashoffset: -24; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <g clip-path="url(#frame)">
+    <rect width="1200" height="360" fill="#0D1117"/>
+    <rect width="1200" height="360" fill="url(#grid)"/>
+  </g>
+  <rect x="0.5" y="0.5" width="1199" height="359" rx="19.5" fill="none" stroke="#30363D"/>
+
+  <text x="64" y="48" class="mono" font-size="12" letter-spacing="3" fill="#8B949E">E-COMMERCE LAKEHOUSE · UNITY CATALOG</text>
+  <text x="1136" y="48" class="mono" font-size="12" fill="#6E7681" text-anchor="end">Databricks · PySpark · Delta Lake</text>
+
+  <line x1="64" y1="188" x2="1136" y2="188" stroke="#22D3EE" stroke-opacity="0.35" stroke-width="2" class="flow"/>
+
+  <!-- columns -->
+  <g stroke-width="1.5">
+    <rect x="64" y="76" width="200" height="226" rx="14" fill="#161B22" stroke="#8B949E" stroke-opacity="0.55"/>
+    <rect x="282" y="76" width="200" height="226" rx="14" fill="#161B22" stroke="#CD7F32" stroke-opacity="0.7"/>
+    <rect x="500" y="76" width="200" height="226" rx="14" fill="#161B22" stroke="#C0C7D0" stroke-opacity="0.6"/>
+    <rect x="718" y="76" width="200" height="226" rx="14" fill="#161B22" stroke="#F5B942" stroke-opacity="0.8"/>
+    <rect x="936" y="76" width="200" height="226" rx="14" fill="#161B22" stroke="#22D3EE" stroke-opacity="0.6"/>
+  </g>
+  <g fill="none" stroke="#6E7681" stroke-width="2">
+    <path d="M270 182l6 6-6 6"/>
+    <path d="M488 182l6 6-6 6"/>
+    <path d="M706 182l6 6-6 6"/>
+    <path d="M924 182l6 6-6 6"/>
+  </g>
+
+  <!-- headers -->
+  <circle cx="86" cy="102" r="5" fill="#8B949E"/>
+  <circle cx="304" cy="102" r="5" fill="#CD7F32"/>
+  <circle cx="522" cy="102" r="5" fill="#C0C7D0"/>
+  <circle cx="740" cy="102" r="5" fill="#F5B942"/>
+  <circle cx="958" cy="102" r="5" fill="#22D3EE"/>
+  <g class="mono" font-size="13" font-weight="700" letter-spacing="2.5" fill="#E6EDF3">
+    <text x="100" y="107">SOURCE</text>
+    <text x="318" y="107">BRONZE</text>
+    <text x="536" y="107">SILVER</text>
+    <text x="754" y="107">GOLD</text>
+    <text x="972" y="107">SERVE</text>
+  </g>
+  <g class="sans" font-size="12.5" fill="#8B949E">
+    <text x="82" y="130">CSV in UC Volumes</text>
+    <text x="300" y="130">Delta · schema-enforced</text>
+    <text x="518" y="130">cleaned · typed · deduped</text>
+    <text x="736" y="130">star schema · BI-ready</text>
+    <text x="954" y="130">dashboard · forecast</text>
+  </g>
+  <g stroke="#30363D">
+    <line x1="80" y1="144" x2="248" y2="144"/>
+    <line x1="298" y1="144" x2="466" y2="144"/>
+    <line x1="516" y1="144" x2="684" y2="144"/>
+    <line x1="734" y1="144" x2="902" y2="144"/>
+    <line x1="952" y1="144" x2="1120" y2="144"/>
+  </g>
+
+  <!-- tables -->
+  <g class="mono" font-size="12" fill="#C9D1D9">
+    <text x="82" y="170">raw/brands</text>
+    <text x="82" y="192">raw/category</text>
+    <text x="82" y="214">raw/products</text>
+    <text x="82" y="236">raw/customers</text>
+    <text x="82" y="258">raw/date</text>
+    <text x="82" y="280">raw/order_items</text>
+
+    <text x="300" y="170">brz_brands</text>
+    <text x="300" y="192">brz_category</text>
+    <text x="300" y="214">brz_products</text>
+    <text x="300" y="236">brz_customers</text>
+    <text x="300" y="258">brz_calendar</text>
+    <text x="300" y="280">brz_order_items</text>
+
+    <text x="518" y="170">slv_brands</text>
+    <text x="518" y="192">slv_category</text>
+    <text x="518" y="214">slv_products</text>
+    <text x="518" y="236">slv_customers</text>
+    <text x="518" y="258">slv_calendar</text>
+    <text x="518" y="280">slv_order_items</text>
+
+    <text x="736" y="170">gld_dim_customers</text>
+    <text x="736" y="192">gld_dim_products</text>
+    <text x="736" y="214">gld_dim_date</text>
+    <text x="736" y="236" fill="#F5B942">gld_fact_order_items</text>
+
+    <text x="954" y="170">Databricks SQL</text>
+    <text x="954" y="192">sales dashboard</text>
+    <text x="954" y="236" fill="#22D3EE">Prophet model</text>
+    <text x="954" y="258">6-month forecast</text>
+    <text x="954" y="280">→ revenue_forecast</text>
+  </g>
+
+  <text x="600" y="334" class="mono" font-size="12" fill="#6E7681" text-anchor="middle">silver dedupes on (order_id, item_seq) and fixes types · gold adds gross, discount and net amounts, coupon flag, date keys</text>
+</svg>
